@@ -1,16 +1,17 @@
-sudo: false
-
+sudo: required
 language: go
-
 go_import_path: k8s.io/heapster
-
 go:
-  - 1.6
-
-install:
-  - go get -u github.com/axw/gocov/gocov
-  - go get -u golang.org/x/tools/cmd/cover
-  - go get -u github.com/mattn/goveralls
-
+- 1.6
 script:
-  - make test-unit test-unit-cov
+- make container TAG=${DOCKER_TAG} PREFIX=xchenum
+- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+- docker push xchenum/heapster:${DOCKER_TAG}
+services:
+- docker
+env:
+  global:
+  - DOCKER_TAG=${TRAVIS_BRANCH}-${TRAVIS_COMMIT::8}
+  - secure: mW59SOP7Pi7Zl+QvW7t3tsfY3QyiYtIcCWPcKF52EVLrMyPlp6VyC0uPeomOFW6SXXbEYvALQD4njdylqrRG9JIbYprdOBdjbfUZRzCjorzoc2MOE93j1ePMq3hd4I+6TiRxNhCIqQL/hKt8YlA56kVwD53/6KQEhIvFsoUzMAFULP7KKnJ9UcXZUWugHpXiI0PxjJho9Ipal6icjLSLO+8ka6AnyiDCeneOCgnHTLvHlJkMXf8MUSK2ChDz1Be7MnynCkhkXwYq6t1X4+Nu/DkfNQzPATZLwrFzLNknGj3nqXk8ONENKPcBa0cMSdR/ZIL4L9wbs3Shc9EsTpNOBZptSvOCrmaI6YSTeTxCrKoIL7ofgjQc4KMKATGwjzHAfs09LmY6tFZGjSAd/KBfMUXQU5uCbFmk+tkdH3xV/g6XvdCCPheG1ipD7EgcLAfmcjgOzc4kxxRqYnKjtW0kfa0nvBaMuwiOei0/jzA9rkl76FGJtzrdGk4jJO1nUWNcxS8k3kIBfd/QFBGHyzbO1UMZ1g58Z6wk1YfnaV6mPBK6RTaPT+lLFopmNADtJ6zMz/DSeme7EaVuv7lIuR+22io3JuEpJtlRYn+9dQF2d0kD/wOyyMY2uNw6UKRXm1TPjlcuVuKQ/1UZxghLGy5E5Qukq5M8YS87NzXBKAXs9p4=
+  - secure: WnM4tNEYI8OwYm2ONZYmiXZoWn1yLSgLrWnnLq4d5gcrtUH5niMVwmUQk8DTCDmdiTAcv8yBVzAl4gEZRc3nCQSvgtytuyroX3C36CgGP/iky+59CGkoiCYq0srJ9PSaiVZk4Z2VfUjYiMny8w6R9/bV4/N4G8Un5Vz1oLydQJR6MqI8oKj7T45CHrZQDmoahTeBe5WunAX1M6iQ3yDlWNwBddZdtoQ3SrjmKIughiWWymLq1Yz4sz6HybIbw/BVkuE28kJYOsFYbsGdIddbVXg8igiElhtopGAiz+fdgvSC902+gi0D/957MUIuA4+hc4h/Q/md/qSm5idf3SbzRpZ1c5p1RuJp4j/lwcVTkhBZgLelPDiWAtFhAAjGRZ+LUxHPjhHRYpxfRv658VOUn10O2lpqweVhu1gV77Qo2oL9Mb6sy5UdXO499DFD5qNTVlGIEaIpxSPQuybreagPaOWxY8nCBAjByPmz84PbW4d2SJdq61+g2ItJn+LSFInAn/mnrg/AtzTH9m9kFJL8gNcUb9nTXuA5XLdY9oKpbaGMsVnyLgC9mJ24cJWXWPOFBsRCtKmE4RLn8UEguXSXudbo+B2tg8rvw4whPOEbQoO08LBr6jp0WcCHKbMrVxMjXOXHP6GJrg5giYwDoXHrNGBpS3keU8mEvZk2psY9ZxQ=
+  - secure: CQEjjoL4dkJpcnq2jlUi6vbmu6MC53uPbGIri6ZG8j5VDK9E3cRe3yKJ7T5SVxH5BRB69RYiI9UQTH0A7HkKEEqfTr1W5yQzqlTtwUpAl4s82Hkszifr/zDcrytdR/W/B8tsDzUWuO4MkihkZBq2a6fMFYJv+sYhCaTH0a3i3XVl7qeqU6+2WBfLX3QGsTl/1vsY+e6fsg4ELBfWtHHOAXmyIVoM1xqRSVKw09JY5te78FeDedpvksTcnYUNp3aSCryGqVRRqRnOcD4hxcgII6vdCHYHMXUyT9+e1EA0T2x1G8zXBeXKZ7ShpkEwAKO7SNzfyzaU+jME0XTYaNC6BjbwiR19vqfcDxe1i5Tgqbj2+xZ6Je8yIHAyFOAC/dWXYaDHlZNzZf/5waEeOtQQU4VK7ZlEwNikhTDkHNfwVF+fXsT5fpRu+hT+tT6VfSUo6ezTegluc3UczsNlFIE4Xrd6cu5VcFk/4LJK0Aupb5WJE/Dq+lZMzq4YxgSUdSsNg/YFmbnDpGle9yDi9zuteDHyMAEAvyi2y+XRR4M9cn8QsODYJlPBMdvx3sGyCujOIGodshyhu/oss+ez2z+niKWyYjYZtfe61E8oVfN1j8w1hrD8mp5wnyXV0XNjZQhfwe66pP+FcLXpTM3YBkz5auiJbSJI2cYdgx7jRfpk3Zw=
